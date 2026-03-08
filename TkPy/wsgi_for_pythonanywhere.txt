@@ -1,0 +1,9 @@
+import sys
+import os
+
+this_dir = '/home/Douglas488/TkPy'
+if this_dir not in sys.path:
+    sys.path.insert(0, this_dir)
+os.chdir(this_dir)
+
+from app import app as application

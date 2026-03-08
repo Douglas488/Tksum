@@ -1,0 +1,11 @@
+# Render Blueprint - Tik Tok 总结工具 API
+# 在 Render Dashboard 可连接仓库后用此配置一键部署，或按 README_RENDER.md 手动创建服务
+services:
+  - type: web
+    name: tkpy-summary-api
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn -w 1 -b 0.0.0.0:$PORT --timeout 120 app:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
