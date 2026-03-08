@@ -6,7 +6,8 @@
 |------|------|--------|
 | `POST /api/purchasing` | 采购 Excel 转 JSON | index12 采购信息 |
 | `POST /api/sku-pescar` | 库存导 Excel 为 JSON | index13 |
-| `POST /api/export-excel-json` | 新品 Nx | index14 |
+| `POST /api/export-excel-json/preview` | 新品 Nx 获取可导日期（表头、日期列、日期列表） | index14 第一步 |
+| `POST /api/export-excel-json` | 新品 Nx 按所选日期导出 JSON（form: file + dates[]） | index14 第二步 |
 | `POST /api/empalagem` | 包裹尺寸 | index15 |
 
 ## 部署步骤
