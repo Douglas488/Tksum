@@ -39,14 +39,15 @@ def api_verify_totp():
         return jsonify({"ok": False, "error": "服务未配置验证"}), 503
     try:
         data = request.get_json(force=True, silent=True) or {}
-        pin = (data.get("pin") or "").strip()
-        if not pin or len(pin) != 6 or not pin.isdigit():
-            return jsonify({"ok": False}), 400
+        raw = (data.get("pin") or "").strip()
+        pin = "".join(c for c in raw if c.isdigit())[:6]
+        if len(pin) != 6:
+            return jsonify({"ok": False, "error": "请输入 6 位数字验证码"}), 400
         import pyotp
         totp = pyotp.TOTP(TOTP_SECRET)
-        if totp.verify(pin, valid_window=1):
+        if totp.verify(pin, valid_window=2):
             return jsonify({"ok": True})
-        return jsonify({"ok": False})
+        return jsonify({"ok": False, "error": "验证码错误或已过期，请使用验证器中的当前 6 位码重试"})
     except Exception:
         return jsonify({"ok": False}), 500
 
