@@ -1,0 +1,12 @@
+# Render Blueprint - Upseller 月营业额报表 API
+# 仓库根目录为 EtiquetaFull-main 时，必须设置 rootDir: Upmensal，否则会找不到 requirements.txt
+services:
+  - type: web
+    name: upmensal-uptotal-api
+    runtime: python
+    rootDir: Upmensal
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn -w 1 -b 0.0.0.0:$PORT --timeout 120 app:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.0"
