@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """
 Tk 总结表生成 - Flask Web API
-部署到 PythonAnywhere 后，前端 index9 通过此接口上传 Excel 并下载生成的总结表。
+部署到 Render 后，前端 index9 通过此接口上传 Excel 并下载生成的总结表。
+需配置环境变量 TOTP_SECRET（谷歌验证器 Base32 密钥）以启用验证码校验。
 """
+import os
 import sys
 import tempfile
 from io import BytesIO
@@ -12,6 +14,8 @@ from flask import Flask, request, send_file, jsonify
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024  # 50MB
+
+TOTP_SECRET = os.environ.get("TOTP_SECRET", "").strip()
 
 
 def _cors_headers(resp):
@@ -24,6 +28,27 @@ def _cors_headers(resp):
 @app.after_request
 def after_request(resp):
     return _cors_headers(resp)
+
+
+@app.route("/api/verify-totp", methods=["POST", "OPTIONS"])
+def api_verify_totp():
+    """验证谷歌验证器 6 位动态码，防止滥用。需在 Render 配置 TOTP_SECRET。"""
+    if request.method == "OPTIONS":
+        return _cors_headers(app.make_default_options_response())
+    if not TOTP_SECRET:
+        return jsonify({"ok": False, "error": "服务未配置验证"}), 503
+    try:
+        data = request.get_json(force=True, silent=True) or {}
+        pin = (data.get("pin") or "").strip()
+        if not pin or len(pin) != 6 or not pin.isdigit():
+            return jsonify({"ok": False}), 400
+        import pyotp
+        totp = pyotp.TOTP(TOTP_SECRET)
+        if totp.verify(pin, valid_window=1):
+            return jsonify({"ok": True})
+        return jsonify({"ok": False})
+    except Exception:
+        return jsonify({"ok": False}), 500
 
 
 def _get_generate_report():
