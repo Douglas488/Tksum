@@ -1,0 +1,9 @@
+# Render Blueprint：一个 Web 服务暴露 4 个 API（index12–index15 调用）
+services:
+  - type: web
+    name: functionality-api
+    runtime: python
+    rootDir: Functionality
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn -w 1 -b 0.0.0.0:$PORT --timeout 120 app:app
+    envVars: []
