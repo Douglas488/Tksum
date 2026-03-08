@@ -103,6 +103,7 @@ def index():
     info = {
         "service": "Tk总结表生成 API",
         "usage": "POST /api/generate with multipart form field 'file' (Excel)",
+        "totp_verify": "POST /api/verify-totp with JSON body {\"pin\": \"6位动态码\"}，需先验证通过后再调用 /api/generate",
     }
     try:
         _get_generate_report()
